@@ -1,4 +1,3 @@
-// alu_tb.v - Testbench for ALU
 `timescale 1ns / 1ps
 
 module alu_tb;
@@ -20,25 +19,50 @@ module alu_tb;
         $monitor("t=%0dns | A=%d, B=%d, opcode=%b | result=%d | carry=%b | zero=%b",
                   $time, A, B, opcode, result, carry_flag, zero_flag);
 
-        // Original tests
-        A = 4'd3; B = 4'd3; opcode = 4'b1000; #10; // Undefined opcode
+        // ADD
+        A=4'd7; B=4'd8; opcode=4'b0000; #10;
 
-        // NEW: ADD test
-        A = 4'd7; B = 4'd8; opcode = 4'b0000; #10; // ADD: 7 + 8 = 15, carry=0
+        // SUB
+        A=4'd5; B=4'd5; opcode=4'b0001; #10;
 
-        A = 4'd5; B = 4'd5; opcode = 4'b0001; #10; // SUB
-        A = 4'ha; B = 4'hc; opcode = 4'b0010; #10; // AND
-        A = 4'hc; B = 4'd0; opcode = 4'b0100; #10; // NOT A
-        A = 4'd9; B = 4'd0; opcode = 4'b1111; #10; // PASS A
-        A = 4'd3; B = 4'd3; opcode = 4'b1000; #10; // Undefined again
+        // AND
+        A=4'ha; B=4'hc; opcode=4'b0010; #10;
 
-        // Extended arithmetic tests
-        A = 4'd3; B = 4'd4; opcode = 4'b0101; #10; // MUL: 3*4=12, no overflow
-        A = 4'd8; B = 4'd4; opcode = 4'b0101; #10; // MUL: overflow
-        A = 4'd9; B = 4'd3; opcode = 4'b0110; #10; // DIV: 9/3=3
-        A = 4'd5; B = 4'd0; opcode = 4'b0110; #10; // DIV: divide-by-zero
+        // OR
+        A=4'hc; B=4'h3; opcode=4'b0011; #10;
+
+        // NOT A
+        A=4'hc; B=4'd0; opcode=4'b0100; #10;
+
+        // PASS A
+        A=4'd9; B=4'd0; opcode=4'b1111; #10;
+
+        // MUL
+        A=4'd3; B=4'd4; opcode=4'b0101; #10;
+        A=4'd8; B=4'd4; opcode=4'b0101; #10;
+
+        // DIV
+        A=4'd9; B=4'd3; opcode=4'b0110; #10;
+        A=4'd5; B=4'd0; opcode=4'b0110; #10;
+
+        // XOR
+        A=4'hf; B=4'h0; opcode=4'b0111; #10;
+
+        // LSL
+        A=4'b0101; B=4'd0; opcode=4'b1000; #10;
+
+        // LSR
+        A=4'b1010; B=4'd0; opcode=4'b1001; #10;
+
+        // ASR
+        A=4'b1010; B=4'd0; opcode=4'b1010; #10;
+
+        // ROL
+        A=4'b1001; B=4'd0; opcode=4'b1011; #10;
+
+        // ROR
+        A=4'b1001; B=4'd0; opcode=4'b1100; #10;
 
         $finish;
     end
-
 endmodule

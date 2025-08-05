@@ -1,4 +1,3 @@
-// alu.v - Extended 4-bit ALU
 `timescale 1ns / 1ps
 
 module alu(
@@ -14,61 +13,41 @@ module alu(
     reg [7:0] product;
 
     always @(*) begin
+        // Default assignments
+        result = 4'b0000;
+        carry_flag = 0;
+        product = 8'b00000000;
+
         case (opcode)
-            4'b0000: begin // ADD
-                {carry_flag, result} = A + B;
-            end
-
-            4'b0001: begin // SUB
-                {carry_flag, result} = A - B;
-            end
-
-            4'b0010: begin // AND
-                result = A & B;
-                carry_flag = 0;
-            end
-
-            4'b0011: begin // OR
-                result = A | B;
-                carry_flag = 0;
-            end
-
-            4'b0100: begin // NOT A
-                result = ~A;
-                carry_flag = 0;
-            end
-
-            4'b0101: begin // MUL (Multiply)
+            4'b0000: {carry_flag, result} = A + B;    // ADD
+            4'b0001: {carry_flag, result} = A - B;    // SUB
+            4'b0010: result = A & B;                  // AND
+            4'b0011: result = A | B;                  // OR
+            4'b0100: result = ~A;                     // NOT A
+            4'b0101: begin                            // MUL
                 product = A * B;
                 result = product[3:0];
-                carry_flag = |product[7:4]; // Overflow if upper bits non-zero
+                carry_flag = |product[7:4];
             end
-
-            4'b0110: begin // DIV (Divide)
+            4'b0110: begin                            // DIV
                 if (B == 0) begin
                     result = 4'b0000;
-                    carry_flag = 1; // Indicate divide-by-zero
+                    carry_flag = 1;
                 end else begin
                     result = A / B;
-                    carry_flag = 0;
                 end
             end
-
-            4'b1111: begin // PASS A
-                result = A;
-                carry_flag = 0;
-            end
-
-            default: begin
-                result = 4'b0000;
-                carry_flag = 0;
-            end
+            4'b0111: result = A ^ B;                  // XOR
+            4'b1000: result = A << 1;                 // LSL
+            4'b1001: result = A >> 1;                 // LSR
+            4'b1010: result = {A[3], A[3:1]};         // ASR
+            4'b1011: result = {A[2:0], A[3]};         // ROL
+            4'b1100: result = {A[0], A[3:1]};         // ROR
+            4'b1111: result = A;                      // PASS A
+            default: result = 4'b0000;
         endcase
 
         // Zero flag
-        if (result == 4'b0000)
-            zero_flag = 1;
-        else
-            zero_flag = 0;
+        zero_flag = (result == 4'b0000);
     end
 endmodule
